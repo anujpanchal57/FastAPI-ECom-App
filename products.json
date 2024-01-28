@@ -1,0 +1,87 @@
+[
+  {
+    "price": 1000,
+    "name": "Wireless Keyboard",
+    "available_qty": 100
+  },
+  {
+    "price": 55000,
+    "name": "TV",
+    "available_qty": 80
+  },
+  {
+    "price": 20000,
+    "name": "Tab",
+    "available_qty": 30
+  },
+  {
+    "price": 500,
+    "name": "Keyboard",
+    "available_qty": 50
+  },
+  {
+    "price": 35000,
+    "name": "iPad Pro",
+    "available_qty": 60
+  },
+  {
+    "price": 30000,
+    "name": "iPad",
+    "available_qty": 80
+  },
+  {
+    "price": 75000,
+    "name": "iPhone",
+    "available_qty": 50
+  },
+  {
+    "price": 90000,
+    "name": "Canon DSLR Camera",
+    "available_qty": 90
+  },
+  {
+    "price": 5000,
+    "name": "Cyclocomputer",
+    "available_qty": 30
+  },
+  {
+    "price": 20000,
+    "name": "Apple Watch",
+    "available_qty": 50
+  },
+  {
+    "price": 100000,
+    "name": "Apple Macbook Pro",
+    "available_qty": 25
+  },
+  {
+    "price": 130000,
+    "name": "Samsung UHD TV",
+    "available_qty": 20
+  },
+  {
+    "price": 7000,
+    "name": "Microwave",
+    "available_qty": 60
+  },
+  {
+    "price": 10000,
+    "name": "Air Conditioner",
+    "available_qty": 100
+  },
+  {
+    "price": 20000,
+    "name": "Philips Air Fryer",
+    "available_qty": 30
+  },
+  {
+    "price": 25000,
+    "name": "XBOX",
+    "available_qty": 25
+  },
+  {
+    "price": 55000,
+    "name": "Sony PS5",
+    "available_qty": 40
+  }
+]
