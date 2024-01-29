@@ -1,4 +1,9 @@
 
+![ALTERNATE-TEXT](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue
+)
+![](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+
 # FastAPI E-Commerce App
 
 Super fast E-Commerce App developed using [FastAPI](https://fastapi.tiangolo.com/) where you can find tonnes of products.
@@ -72,6 +77,7 @@ curl --location '127.0.0.1:8000/orders' \
     ]
 }'
 ```
+*Alternatively, you can refer to the docs created by FastAPI on the following URL: [127.0.0.1:8000/docs](127.0.0.1:8000/docs)*
 
 
 
