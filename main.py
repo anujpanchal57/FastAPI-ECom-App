@@ -34,7 +34,6 @@ class CreateOrder(BaseModel):
 # GET products API as per query params passed
 @app.get("/products")
 def get_products(offset: int, limit: int, min_price: Optional[int] = None, max_price: Optional[int] = None):
-    page = offset // limit + 1
     agg_pipeline = [{
         "$facet": {
             "page": [
@@ -43,11 +42,9 @@ def get_products(offset: int, limit: int, min_price: Optional[int] = None, max_p
                 },
                 {
                     "$project": {
-                        "sample": "$totalResults",
                         "nextOffset": {
                             "$cond": [
-                                {"$gte": [{"$add": [offset, limit]},
-                                          {"$ceil": {"$divide": ["$totalResults", limit]}}]},
+                                {"$gte": [{"$add": [offset, limit]}, "$totalResults"]},
                                 None,
                                 {"$add": [offset, limit]}
                             ]
@@ -81,10 +78,8 @@ def get_products(offset: int, limit: int, min_price: Optional[int] = None, max_p
         agg_pipeline[0]['$facet']['data'].append({"$limit": limit})
 
     result = list(mongo['products'].aggregate(agg_pipeline))
-    pprint(result)
 
-    return {"limit": limit, "total": limit, "prevOffset": limit, "nextOffset": limit, "minPrice": min_price,
-            "maxPrice": max_price}
+    return {"result": result}
 
 # API to create an order
 @app.post("/orders", response_model=Order)
@@ -100,7 +95,7 @@ def create_order(order_data: CreateOrder):
         user_address=order_data.user_address
     )
 
-    # Save order to database
+    # Inserting the order in the orders collection
     mongo['orders'].insert_one(order_obj.dict())
 
     return order_obj
