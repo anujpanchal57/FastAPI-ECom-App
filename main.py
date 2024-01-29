@@ -5,27 +5,34 @@ from pydantic import BaseModel, Field
 from bson import ObjectId
 from datetime import datetime
 from pprint import pprint
+import json
+from bson import json_util
 
+# Created a Mongo instance to work with database
 mongo = MongoClient("mongodb://127.0.0.1:27017/cc-ecommerce-db")['cc-ecommerce-db']
 
 # Create an instance of FastAPI
 app = FastAPI()
 
+# Item Base Model (For the products bought by the user)
 class Item(BaseModel):
     productId: str
     boughtQuantity: int
 
+# User Address Base Model (For the information on user address)
 class UserAddress(BaseModel):
     city: str
     country: str
     zip_code: str
 
+# Order Base Model (Structure in which order will be saved in the DB)
 class Order(BaseModel):
     createdOn: datetime = Field(default_factory=datetime.now)
     total_amount: int
     user_address: UserAddress
     items: List[Item]
 
+# Base Model for request payload of the create order API
 class CreateOrder(BaseModel):
     items: List[Item]
     total_amount: float
@@ -73,13 +80,15 @@ def get_products(offset: int, limit: int, min_price: Optional[int] = None, max_p
         agg_pipeline[0]['$facet']['data'].append({"$match": {"price": {"$gte": min_price}}})
     elif max_price:
         agg_pipeline[0]['$facet']['data'].append({"$match": {"price": {"$lte": max_price}}})
-    else:
-        agg_pipeline[0]['$facet']['data'].append({"$skip": offset})
-        agg_pipeline[0]['$facet']['data'].append({"$limit": limit})
+
+    agg_pipeline[0]['$facet']['data'].append({"$skip": offset})
+    agg_pipeline[0]['$facet']['data'].append({"$limit": limit})
 
     result = list(mongo['products'].aggregate(agg_pipeline))
 
-    return {"result": result}
+    result[0]['page'][0]['limit'], result[0]['page'][0]['total'] = limit, len(result[0]['data'])
+
+    return json.loads(json_util.dumps(result))
 
 # API to create an order
 @app.post("/orders", response_model=Order)
