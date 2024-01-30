@@ -41,17 +41,44 @@ class CreateOrder(BaseModel):
 # GET products API as per query params passed
 @app.get("/products")
 def get_products(offset: int, limit: int, min_price: Optional[int] = None, max_price: Optional[int] = None):
-    agg_pipeline = [{
+    agg_pipeline = []
+
+    if min_price and max_price:
+        agg_pipeline.append({
+            "$match": {
+                "$and": [
+                    {"price": {"$gte": min_price}},
+                    {"price": {"$lte": max_price}}
+                ]
+            }
+        })
+    elif min_price:
+        agg_pipeline.append({
+            "$match": {"price": {"$gte": min_price}}
+        })
+    elif  max_price:
+        agg_pipeline.append({
+            "$match": {"price": {"$lte": max_price}}
+        })
+
+    agg_pipeline.append({
         "$facet": {
+            "data": [
+                {"$skip": offset},
+                {"$limit": limit}
+            ],
             "page": [
+                {"$skip": offset},
+                {"$limit": limit},
                 {
-                    "$count": "totalResults",
+                    "$count": "count"
                 },
                 {
                     "$project": {
+                        "total": "$count",
                         "nextOffset": {
                             "$cond": [
-                                {"$gte": [{"$add": [offset, limit]}, "$totalResults"]},
+                                {"$lt": ["$count", limit]},
                                 None,
                                 {"$add": [offset, limit]}
                             ]
@@ -65,28 +92,13 @@ def get_products(offset: int, limit: int, min_price: Optional[int] = None, max_p
                         }
                     }
                 }
-            ],
-            "data": []
-        }
-    }]
-    if min_price and max_price:
-        agg_pipeline[0]['$facet']['data'].append({"$match": {
-            "$and": [
-                {"price": {"$gte": min_price}},
-                {"price": {"$lte": max_price}}
             ]
-        }})
-    elif min_price:
-        agg_pipeline[0]['$facet']['data'].append({"$match": {"price": {"$gte": min_price}}})
-    elif max_price:
-        agg_pipeline[0]['$facet']['data'].append({"$match": {"price": {"$lte": max_price}}})
-
-    agg_pipeline[0]['$facet']['data'].append({"$skip": offset})
-    agg_pipeline[0]['$facet']['data'].append({"$limit": limit})
+        }
+    })
 
     result = list(mongo['products'].aggregate(agg_pipeline))
 
-    result[0]['page'][0]['limit'], result[0]['page'][0]['total'] = limit, len(result[0]['data'])
+    result[0]['page'][0]['limit'] = limit
 
     return json.loads(json_util.dumps(result))
 
