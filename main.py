@@ -43,6 +43,7 @@ class CreateOrder(BaseModel):
 def get_products(offset: int, limit: int, min_price: Optional[int] = None, max_price: Optional[int] = None):
     agg_pipeline = []
 
+    # Applying filters on the provided min and max price in the query param
     if min_price and max_price:
         agg_pipeline.append({
             "$match": {
@@ -61,6 +62,7 @@ def get_products(offset: int, limit: int, min_price: Optional[int] = None, max_p
             "$match": {"price": {"$lte": max_price}}
         })
 
+    # BONUS: PAGINATION LOGIC APPLIED USING $FACET
     agg_pipeline.append({
         "$facet": {
             "data": [
