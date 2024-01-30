@@ -67,7 +67,16 @@ def get_products(offset: int, limit: int, min_price: Optional[int] = None, max_p
         "$facet": {
             "data": [
                 {"$skip": offset},
-                {"$limit": limit}
+                {"$limit": limit},
+                {
+                    "$project": {
+                        "id": "$_id",
+                        "_id": 0,
+                        "name": 1,
+                        "price": 1,
+                        "quantity": "$available_qty"
+                    }
+                }
             ],
             "page": [
                 {"$skip": offset},
